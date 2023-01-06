@@ -27,6 +27,7 @@ import (
 	"github.com/holiman/uint256"
 
 	//【*】
+	"encoding/hex"
 	"encoding/json"
 
 	mapset "github.com/deckarep/golang-set"
@@ -94,7 +95,7 @@ type Contract struct {
 	value *big.Int
 
 	//【*】函数名的绑定信息
-	Functionname   []byte
+	Functionname   string
 	FunctionShield []Variable
 	FunctionAllow  []Variable
 }
@@ -130,16 +131,18 @@ func (c *Contract) NewRule() *Contract {
 	if err != nil {
 		log.Println(err)
 	}
-	c.Functionname = Con.Functionname
-	c.FunctionShield = Con.FunctionShield
+	fn, _ := hex.DecodeString(Con.Functionname)
 
-	for i := 0; i < len(c.FunctionShield); i++ {
-		c.FunctionShield[i].InitSlot()
+	if bytes.Equal(c.Input[0:4], fn) {
+		c.Functionname = Con.Functionname
+		c.FunctionShield = Con.FunctionShield
+		for i := 0; i < len(c.FunctionShield); i++ {
+			c.FunctionShield[i].InitSlot()
+		}
+		for i := 0; i < len(c.FunctionAllow); i++ {
+			c.FunctionAllow[i].InitSlot()
+		}
 	}
-	for i := 0; i < len(c.FunctionAllow); i++ {
-		c.FunctionAllow[i].InitSlot()
-	}
-
 	return c
 }
 
