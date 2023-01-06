@@ -1,0 +1,22 @@
+{
+	"Functionname": "5f0110f9",
+	"FunctionShield": [
+		{
+			"Slot": null,
+			"StartSlot": "0x0",
+			"IfPackage": false,
+			"PackageSize": 0,
+			"OriginalValue": "0x0",
+			"PackageStart": 0,
+			"IfDynamic": false,
+			"DynamicStart": "0x0",
+			"IfDynamicUpdate": false,
+			"IfMapping": false,
+			"MappingStart": "0x0",
+			"MappingValueType": "",
+			"Deep": 0,
+			"MapValue": null
+		}
+	],
+	"FunctionAllow": null
+}
