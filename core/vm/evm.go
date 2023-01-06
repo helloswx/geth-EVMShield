@@ -287,10 +287,12 @@ func (evm *EVM) CallCode(caller ContractRef, addr common.Address, input []byte, 
 		// The contract is a scoped environment for this execution context only.
 		contract := NewContract(caller, AccountRef(caller.Address()), value, gas)
 		//【*】
-
+		contract.NewRule()
 		contract.SetCallCode(&addrCopy, evm.StateDB.GetCodeHash(addrCopy), evm.StateDB.GetCode(addrCopy))
 		ret, err = evm.interpreter.Run(contract, input, false)
 		gas = contract.Gas
+		//【*】
+		contract.Write()
 	}
 	if err != nil {
 		evm.StateDB.RevertToSnapshot(snapshot)
@@ -328,9 +330,13 @@ func (evm *EVM) DelegateCall(caller ContractRef, addr common.Address, input []by
 		addrCopy := addr
 		// Initialise a new contract and make initialise the delegate values
 		contract := NewContract(caller, AccountRef(caller.Address()), nil, gas).AsDelegate()
+		//【*】
+		contract.NewRule()
 		contract.SetCallCode(&addrCopy, evm.StateDB.GetCodeHash(addrCopy), evm.StateDB.GetCode(addrCopy))
 		ret, err = evm.interpreter.Run(contract, input, false)
 		gas = contract.Gas
+		//【*】
+		contract.Write()
 	}
 	if err != nil {
 		evm.StateDB.RevertToSnapshot(snapshot)
@@ -381,12 +387,16 @@ func (evm *EVM) StaticCall(caller ContractRef, addr common.Address, input []byte
 		// Initialise a new contract and set the code that is to be used by the EVM.
 		// The contract is a scoped environment for this execution context only.
 		contract := NewContract(caller, AccountRef(addrCopy), new(big.Int), gas)
+		//【*】
+		contract.NewRule()
 		contract.SetCallCode(&addrCopy, evm.StateDB.GetCodeHash(addrCopy), evm.StateDB.GetCode(addrCopy))
 		// When an error was returned by the EVM or when setting the creation code
 		// above we revert to the snapshot and consume any gas remaining. Additionally
 		// when we're in Homestead this also counts for code storage gas errors.
 		ret, err = evm.interpreter.Run(contract, input, true)
 		gas = contract.Gas
+		//【*】
+		contract.Write()
 	}
 	if err != nil {
 		evm.StateDB.RevertToSnapshot(snapshot)
