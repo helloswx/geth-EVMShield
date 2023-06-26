@@ -1,6 +1,6 @@
-## Go Ethereum
+## Go Ethereum（EVM-Shield）
+**This project is based on the Ethernet client geth, which integrates a hardened version of EVM, called EVM-shield.**
 
-Official Golang execution layer implementation of the Ethereum protocol.
 
 [![API Reference](
 https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/68747470733a2f2f676f646f632e6f72672f6769746875622e636f6d2f676f6c616e672f6764646f3f7374617475732e737667
@@ -9,8 +9,6 @@ https://camo.githubusercontent.com/915b7be44ada53c290eb157634330494ebe3e30a/6874
 [![Travis](https://travis-ci.com/ethereum/go-ethereum.svg?branch=master)](https://travis-ci.com/ethereum/go-ethereum)
 [![Discord](https://img.shields.io/badge/discord-join%20chat-blue.svg)](https://discord.gg/nthXNEv)
 
-Automated builds are available for stable releases and the unstable master branch. Binary
-archives are published at https://geth.ethereum.org/downloads/.
 
 ## Building the source
 
@@ -68,83 +66,6 @@ Recommended:
 * High-performance SSD with at least 1TB of free space
 * 25+ MBit/sec download Internet service
 
-### Full node on the main Ethereum network
-
-By far the most common scenario is people wanting to simply interact with the Ethereum
-network: create accounts; transfer funds; deploy and interact with contracts. For this
-particular use case, the user doesn't care about years-old historical data, so we can
-sync quickly to the current state of the network. To do so:
-
-```shell
-$ geth console
-```
-
-This command will:
- * Start `geth` in snap sync mode (default, can be changed with the `--syncmode` flag),
-   causing it to download more data in exchange for avoiding processing the entire history
-   of the Ethereum network, which is very CPU intensive.
- * Start the built-in interactive [JavaScript console](https://geth.ethereum.org/docs/interface/javascript-console),
-   (via the trailing `console` subcommand) through which you can interact using [`web3` methods](https://github.com/ChainSafe/web3.js/blob/0.20.7/DOCUMENTATION.md) 
-   (note: the `web3` version bundled within `geth` is very old, and not up to date with official docs),
-   as well as `geth`'s own [management APIs](https://geth.ethereum.org/docs/rpc/server).
-   This tool is optional and if you leave it out you can always attach it to an already running
-   `geth` instance with `geth attach`.
-
-### A Full node on the Görli test network
-
-Transitioning towards developers, if you'd like to play around with creating Ethereum
-contracts, you almost certainly would like to do that without any real money involved until
-you get the hang of the entire system. In other words, instead of attaching to the main
-network, you want to join the **test** network with your node, which is fully equivalent to
-the main network, but with play-Ether only.
-
-```shell
-$ geth --goerli console
-```
-
-The `console` subcommand has the same meaning as above and is equally
-useful on the testnet too.
-
-Specifying the `--goerli` flag, however, will reconfigure your `geth` instance a bit:
-
- * Instead of connecting to the main Ethereum network, the client will connect to the Görli
-   test network, which uses different P2P bootnodes, different network IDs and genesis
-   states.
- * Instead of using the default data directory (`~/.ethereum` on Linux for example), `geth`
-   will nest itself one level deeper into a `goerli` subfolder (`~/.ethereum/goerli` on
-   Linux). Note, on OSX and Linux this also means that attaching to a running testnet node
-   requires the use of a custom endpoint since `geth attach` will try to attach to a
-   production node endpoint by default, e.g.,
-   `geth attach <datadir>/goerli/geth.ipc`. Windows users are not affected by
-   this.
-
-*Note: Although some internal protective measures prevent transactions from
-crossing over between the main network and test network, you should always
-use separate accounts for play and real money. Unless you manually move
-accounts, `geth` will by default correctly separate the two networks and will not make any
-accounts available between them.*
-
-### Full node on the Rinkeby test network
-
-Go Ethereum also supports connecting to the older proof-of-authority based test network
-called [*Rinkeby*](https://www.rinkeby.io) which is operated by members of the community.
-
-```shell
-$ geth --rinkeby console
-```
-
-### Full node on the Ropsten test network
-
-In addition to Görli and Rinkeby, Geth also supports the ancient Ropsten testnet. The
-Ropsten test network is based on the Ethash proof-of-work consensus algorithm. As such,
-it has certain extra overhead and is more susceptible to reorganization attacks due to the
-network's low difficulty/security.
-
-```shell
-$ geth --ropsten console
-```
-
-*Note: Older Geth configurations store the Ropsten database in the `testnet` subdirectory.*
 
 ### Configuration
 
@@ -164,25 +85,7 @@ $ geth --your-favourite-flags dumpconfig
 
 *Note: This works only with `geth` v1.6.0 and above.*
 
-#### Docker quick start
 
-One of the quickest ways to get Ethereum up and running on your machine is by using
-Docker:
-
-```shell
-docker run -d --name ethereum-node -v /Users/alice/ethereum:/root \
-           -p 8545:8545 -p 30303:30303 \
-           ethereum/client-go
-```
-
-This will start `geth` in snap-sync mode with a DB memory allowance of 1GB, as the
-above command does.  It will also create a persistent volume in your home directory for
-saving your blockchain as well as map the default ports. There is also an `alpine` tag
-available for a slim version of the image.
-
-Do not forget `--http.addr 0.0.0.0`, if you want to access RPC from other containers
-and/or hosts. By default, `geth` binds to the local interface and RPC endpoints are not
-accessible from the outside.
 
 ### Programmatically interfacing `geth` nodes
 
@@ -342,38 +245,3 @@ proceedings to the account specified by `--miner.etherbase`. You can further tun
 by changing the default gas limit blocks converge to (`--miner.targetgaslimit`) and the price
 transactions are accepted at (`--miner.gasprice`).
 
-## Contribution
-
-Thank you for considering helping out with the source code! We welcome contributions
-from anyone on the internet, and are grateful for even the smallest of fixes!
-
-If you'd like to contribute to go-ethereum, please fork, fix, commit and send a pull request
-for the maintainers to review and merge into the main code base. If you wish to submit
-more complex changes though, please check up with the core devs first on [our Discord Server](https://discord.gg/invite/nthXNEv)
-to ensure those changes are in line with the general philosophy of the project and/or get
-some early feedback which can make both your efforts much lighter as well as our review
-and merge procedures quick and simple.
-
-Please make sure your contributions adhere to our coding guidelines:
-
- * Code must adhere to the official Go [formatting](https://golang.org/doc/effective_go.html#formatting)
-   guidelines (i.e. uses [gofmt](https://golang.org/cmd/gofmt/)).
- * Code must be documented adhering to the official Go [commentary](https://golang.org/doc/effective_go.html#commentary)
-   guidelines.
- * Pull requests need to be based on and opened against the `master` branch.
- * Commit messages should be prefixed with the package(s) they modify.
-   * E.g. "eth, rpc: make trace configs optional"
-
-Please see the [Developers' Guide](https://geth.ethereum.org/docs/developers/devguide)
-for more details on configuring your environment, managing project dependencies, and
-testing procedures.
-
-## License
-
-The go-ethereum library (i.e. all code outside of the `cmd` directory) is licensed under the
-[GNU Lesser General Public License v3.0](https://www.gnu.org/licenses/lgpl-3.0.en.html),
-also included in our repository in the `COPYING.LESSER` file.
-
-The go-ethereum binaries (i.e. all code inside of the `cmd` directory) are licensed under the
-[GNU General Public License v3.0](https://www.gnu.org/licenses/gpl-3.0.en.html), also
-included in our repository in the `COPYING` file.
